@@ -22,6 +22,7 @@ function configureSocketIO(server: http.Server): Server {
             origin: "*",
             methods: ["GET", "POST"],
         },
+        perMessageDeflate: true,
     });
 
     io.on("connection", (socket: Socket) => {
