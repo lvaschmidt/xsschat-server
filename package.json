@@ -2,8 +2,9 @@
   "name": "xsschat-server",
   "version": "0.0.1",
   "description": "express server for xsschat-reloaded",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
+    "build": "tsc",
     "start": "node build/index.js"
   },
   "author": "Alex Foster",
