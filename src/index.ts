@@ -19,7 +19,7 @@ interface RoomData {
 function configureSocketIO(server: http.Server): Server {
     const io = new Server(server, {
         cors: {
-            origin: /(([a-z]\.)*xsschat\.com)|(.\.vercel\.app)/,
+            origin: "*",
             methods: ["GET", "POST"],
         },
     });
