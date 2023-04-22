@@ -44,8 +44,14 @@ function configureSocketIO(server: http.Server): Server {
 }
 
 // Main function
-function main() {
-    const httpServer = http.createServer();
+async function main() {
+    const httpServer = http.createServer(async (req, res) => {
+        if (req.url === "/health") {
+            res.writeHead(200);
+            res.end("Server is up.");
+        }
+    });
+
     const io = configureSocketIO(httpServer);
 
     httpServer.listen(config.port, () => {
