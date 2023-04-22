@@ -2,7 +2,7 @@
   "compilerOptions": {
 
     /* Language and Environment */
-    "target": "es2016",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+    "target": "es2019",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
 
     /* Modules */
     "module": "commonjs",                                /* Specify what module code is generated. */
@@ -28,9 +28,8 @@
     "noImplicitAny": true,                            /* Enable error reporting for expressions and declarations with an implied 'any' type. */
     "strictNullChecks": true,                         /* When type checking, take into account 'null' and 'undefined'. */
     "alwaysStrict": true,                             /* Ensure 'use strict' is always emitted. */
-    "noUnusedLocals": true,                           /* Enable error reporting when local variables aren't read. */
-    "noUnusedParameters": true,                       /* Raise an error when a function parameter isn't read. */
     "noFallthroughCasesInSwitch": true,               /* Enable error reporting for fallthrough cases in switch statements. */
     "noUncheckedIndexedAccess": true,                 /* Add 'undefined' to a type when accessed using an index. */
-  }
+  },
+  "include": ["src/**/*.ts"],
 }
