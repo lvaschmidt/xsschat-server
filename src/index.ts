@@ -27,16 +27,28 @@ function configureSocketIO(server: http.Server): Server {
 
     io.on("connection", (socket: Socket) => {
         let room: string | null = null;
+        let name: string | null = null;
 
         socket.on("join", (data: RoomData) => {
             room = data.room;
+            name = data.name;
             socket.join(room);
             io.to(room).emit("join", data.name);
+            io.to(room).emit("user-connected", `${name} has connected.`);
         });
 
         socket.on("message", (msg: string) => {
             if (room) {
                 io.to(room).emit("message", msg);
+            }
+        });
+
+        socket.on("disconnect", (reason) => {
+            if (room && name) {
+                io.to(room).emit(
+                    "user-disconnected",
+                    `${name} has disconnected.`
+                );
             }
         });
     });
