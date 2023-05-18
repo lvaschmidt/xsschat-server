@@ -1,5 +1,6 @@
 import http from "http";
 import { Server, Socket } from "socket.io";
+import * as dotenv from "dotenv";
 
 // Configuration
 interface Config {
@@ -37,11 +38,17 @@ function configureSocketIO(server: http.Server): Server {
             io.to(room).emit("user-connected", `${name} has connected.`);
         });
 
-        socket.on("message", (msg: string) => {
-            if (room) {
-                io.to(room).emit("message", msg);
+        socket.on(
+            "message",
+            (msg: { value: string; name: string; type: string }) => {
+                if (room) {
+                    io.to(room).emit("message", msg);
+                    if (process.env.NODE_ENV == "development") {
+                        console.log(`${msg.name}: ${msg.value}`);
+                    }
+                }
             }
-        });
+        );
 
         socket.on("disconnect", (reason) => {
             if (room && name) {
@@ -58,6 +65,7 @@ function configureSocketIO(server: http.Server): Server {
 
 // Main function
 async function main() {
+    dotenv.config();
     const httpServer = http.createServer(async (req, res) => {
         if (req.url === "/health") {
             res.writeHead(200);
