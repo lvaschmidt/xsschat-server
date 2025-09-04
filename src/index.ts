@@ -1,6 +1,7 @@
 import http from "http";
 import { Server, Socket } from "socket.io";
 import * as dotenv from "dotenv";
+import { answer } from "./llm";
 
 // Configuration
 interface Config {
@@ -32,21 +33,27 @@ function configureSocketIO(server: http.Server): Server {
     let name: string | null = null;
 
     socket.on("join", (data: RoomData) => {
-      room = data.room;
-      name = data.name;
-      socket.join(room);
-      io.to(room).emit("join", data.name);
-      io.to(room).emit("user-connected", `${name} has connected.`);
+      if (data.name) {
+        room = data.room;
+        name = data.name;
+        socket.join(room);
+        io.to(room).emit("user-connected", `${name} has connected.`);
+        console.log(`${name.substr(0, 20)} joined room ${room.substr(0, 20)}.`)
+      }
     });
 
     socket.on(
       "message",
-      (msg: { value: string; name: string; type: string }) => {
+      async (msg: { value: string; name: string; type: string }) => {
         if (room) {
           io.to(room).emit("message", msg);
-          if (process.env.NODE_ENV == "development") {
-            console.log(`${msg.name}: ${msg.value}`);
+          if (msg.value.startsWith("/ai ")) {
+            const query = msg.value.substring(4)
+            io.to(room).emit("message", { type: "chat", name: "AI™", value: `> ${query}\n${await answer(query)}` })
           }
+          // if (process.env.NODE_ENV == "development") {
+          //   console.log(`${msg.name}: ${msg.value}`);
+          // }
         }
       }
     );
@@ -54,6 +61,7 @@ function configureSocketIO(server: http.Server): Server {
     socket.on("disconnect", (reason) => {
       if (room && name) {
         io.to(room).emit("user-disconnected", `${name} has disconnected.`);
+        console.log(`${name.substr(0, 20)} disconnected from room ${room.substr(0, 20)}.`)
       }
     });
   });

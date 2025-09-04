@@ -1,20 +1,21 @@
 {
   "name": "xsschat-server",
-  "version": "0.0.1",
-  "description": "express server for xsschat-reloaded",
+  "version": "0.0.2",
+  "description": "bun server for xsschat-reloaded",
   "main": "build/index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node build/index.js"
+    "start": "bun run src/index.js"
   },
-  "author": "Alex Foster",
+  "author": "Alex Foster/Lysander Schmidt",
   "dependencies": {
     "dotenv": "^16.0.3",
-    "express": "^4.18.2",
+    "openai": "^5.19.1",
     "socket.io": "^4.6.1"
   },
   "devDependencies": {
     "@types/node": "^18.15.13",
-    "typescript": "^5.0.4"
-  }
+    "typescript": "^5.0.4",
+    "@types/bun": "latest"
+  },
+  "private": true
 }
