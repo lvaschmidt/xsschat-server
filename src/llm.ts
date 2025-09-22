@@ -1,31 +1,38 @@
-import { stringWidth } from 'bun';
 import 'dotenv/config';
-import OpenAI from 'openai';
+// import OpenAI from 'openai';
 
-const groqai = new OpenAI({
-    baseURL: "https://openrouter.ai/api/v1",
-    apiKey: process.env.OPENROUTER_API_KEY,
-});
+// const openrouter = new OpenAI({
+//     baseURL: "https://openrouter.ai/api/v1",
+//     apiKey: process.env.OPENROUTER_API_KEY,
+// });
+
+import Cerebras from '@cerebras/cerebras_cloud_sdk';
+
+const cerebras = new Cerebras();
 
 export async function answer(query: string) {
-    if (query.length < 8000) {
+    if (query.length < 500000) {
         try {
-            return (await groqai.chat.completions.create({
-                model: "openai/gpt-oss-120b",
+            const result = await cerebras.chat.completions.create({
+                model: "gpt-oss-120b", //"openai/gpt-oss-120b",
                 reasoning_effort: "low",
                 messages: [
                     {
-                        role: "developer",
-                        content: "Follow the user's request with brevity."
+                        role: "system",
+                        content: "Answer the user in exactly ONE sentence unless asked for a different length explicitly."
                     },
                     {
                         role: "user",
                         content: query
                     }
                 ]
-            })).choices[0]?.message.content
+            }) as { choices: { message: { content: string } }[] };
+            return result.choices[0]?.message.content;
         } catch (err: unknown) {
-            return(JSON.stringify(err))
+            if (err instanceof Error) {
+                return err.message;
+            }
+            return String(err);
         }
     }
 }
