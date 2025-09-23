@@ -19,7 +19,7 @@ export async function answer(query: string) {
                 messages: [
                     {
                         role: "system",
-                        content: "Answer the user in exactly ONE sentence unless asked for a different length explicitly."
+                        content: "Answer the user with brevity, or however best meets the user's request."
                     },
                     {
                         role: "user",
