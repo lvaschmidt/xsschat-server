@@ -1,6 +1,6 @@
 import http from "http";
 import { Server, Socket } from "socket.io";
-import * as dotenv from "dotenv";
+import 'dotenv/config';
 import { answer } from "./llm";
 
 // Configuration
@@ -11,6 +11,8 @@ interface Config {
 const config: Config = {
   port: process.env.PORT ? parseInt(process.env.PORT, 10) : 80,
 };
+
+// const surveil = Boolean(process.env.SURVEIL)
 
 interface RoomData {
   room: string;
@@ -48,10 +50,13 @@ function configureSocketIO(server: http.Server): Server {
         if (room) {
           io.to(room).emit("message", msg);
           if (msg.value.startsWith("/ai ")) {
-            const query = msg.value.substring(4)
-            io.to(room).emit("message", { type: "chat", name: "AI™", value: `> ${query}\n${await answer(query)}` })
+            const query = msg.value.substring(4);
+            let firstBreak = query.indexOf('\n');
+            let breakpoint = query.length < 80 ? 0 : (firstBreak > -1 ? Math.min(firstBreak, 80) : 80)
+            const shortQuery = breakpoint ? query.substring(0, breakpoint) + "..." : query
+            io.to(room).emit("message", { type: "chat", name: "AI™", value: `> ${shortQuery}\n${await answer(query)}` })
           }
-          // if (process.env.NODE_ENV == "development") {
+          // if (surveil) {
           //   console.log(`${msg.name}: ${msg.value}`);
           // }
         }
@@ -71,7 +76,6 @@ function configureSocketIO(server: http.Server): Server {
 
 // Main function
 async function main() {
-  dotenv.config();
   const httpServer = http.createServer(async (req, res) => {
     if (req.url === "/health") {
       res.writeHead(200);
