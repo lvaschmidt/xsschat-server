@@ -1,20 +1,24 @@
 import 'dotenv/config';
-// import OpenAI from 'openai';
+import OpenAI from 'openai';
+
+// import Cerebras from '@cerebras/cerebras_cloud_sdk';
+// const cerebras = new Cerebras();
 
 // const openrouter = new OpenAI({
 //     baseURL: "https://openrouter.ai/api/v1",
 //     apiKey: process.env.OPENROUTER_API_KEY,
 // });
 
-import Cerebras from '@cerebras/cerebras_cloud_sdk';
-
-const cerebras = new Cerebras();
+const nova = new OpenAI({
+    apiKey: process.env.NOVA_API_KEY,
+    baseURL: 'https://api.nova.amazon.com/v1',
+});
 
 export async function answer(query: string) {
     if (query.length < 500000) {
         try {
-            const result = await cerebras.chat.completions.create({
-                model: "gpt-oss-120b", //"openai/gpt-oss-120b",
+            const result = await nova.chat.completions.create({
+                model: "nova-2-lite-v1",//"gpt-oss-120b", //"openai/gpt-oss-120b",
                 reasoning_effort: "low",
                 messages: [
                     {
