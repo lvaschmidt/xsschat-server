@@ -44,6 +44,17 @@ function configureSocketIO(server: http.Server): Server {
       }
     });
 
+    socket.on("rejoin", (data: RoomData) => {
+      if (data.name) {
+        room = data.room;
+        name = data.name;
+        socket.join(room);
+        console.log(`${name.substr(0, 20)} rejoined room ${room.substr(0, 20)}.`)
+      }
+    });
+
+    socket.on("ping", () => socket.emit("pong"));
+
     socket.on(
       "message",
       async (msg: { value: string; name: string; type: string }) => {
@@ -55,6 +66,14 @@ function configureSocketIO(server: http.Server): Server {
             let breakpoint = query.length < 80 ? 0 : (firstBreak > -1 ? Math.min(firstBreak, 80) : 80)
             const shortQuery = breakpoint ? query.substring(0, breakpoint) + "..." : query
             io.to(room).emit("message", { type: "chat", name: "AI™", value: `> ${shortQuery}\n${await answer(query)}` })
+          } else if (msg.value.startsWith("/oom")) {
+            let numbers = msg.value.split(" ").slice(1).map((n) => parseFloat(n)).filter((n) => !isNaN(n));
+            if (numbers[0] && numbers[1]) {
+              const result = Math.abs(Math.log10(numbers[0] / numbers[1]));
+              io.to(room).emit("message", { type: "chat", name: "AI™", value: `The oom between ${numbers[0]} and ${numbers[1]} is ${result.toFixed(2)}.` });
+            } else {
+              io.to(room).emit("message", { type: "chat", name: "AI™", value: `That's not numbers you idiot.` });
+            }
           }
           // if (surveil) {
           //   console.log(`${msg.name}: ${msg.value}`);
