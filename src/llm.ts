@@ -29,14 +29,12 @@ export async function answer(query: string) {
                         role: "user",
                         content: query
                     }
-                ]
+                ],
+                system_tools: ["nova_grounding"]
             }) as { choices: { message: { content: string } }[] };
-            return result.choices[0]?.message.content;
+            return Bun.markdown.html(result.choices[0]?.message.content ?? "Err: No response from model.");
         } catch (err: unknown) {
-            if (err instanceof Error) {
-                return err.message;
-            }
-            return String(err);
+            return JSON.stringify(err);
         }
     }
 }
