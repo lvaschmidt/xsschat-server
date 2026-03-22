@@ -8,14 +8,13 @@
   },
   "author": "Alex Foster/Lysander Schmidt",
   "dependencies": {
-    "@cerebras/cerebras_cloud_sdk": "^1.50.0",
-    "dotenv": "^16.0.3",
-    "openai": "^5.19.1",
-    "socket.io": "^4.6.1"
+    "dotenv": "^16.6.1",
+    "openai": "^5.23.2",
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
-    "@types/node": "^18.15.13",
-    "typescript": "^5.0.4",
+    "@types/node": "^18.19.130",
+    "typescript": "^5.9.3",
     "@types/bun": "latest"
   },
   "private": true
