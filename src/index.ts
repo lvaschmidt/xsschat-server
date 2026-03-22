@@ -70,7 +70,11 @@ function configureSocketIO(server: http.Server): Server {
             let numbers = msg.value.split(" ").slice(1).map((n) => parseFloat(n)).filter((n) => !isNaN(n));
             if (numbers[0] && numbers[1]) {
               const result = Math.abs(Math.log10(numbers[0] / numbers[1]));
-              io.to(room).emit("message", { type: "chat", name: "AI™", value: `The oom between ${numbers[0]} and ${numbers[1]} is ${result.toFixed(2)}.` });
+              if(!isFinite(result)) {
+                io.to(room).emit("message", { type: "chat", name: "AI™", value: `There is NaN of oom between ${numbers[0]} and ${numbers[1]}.` });
+                return;
+              }
+              io.to(room).emit("message", { type: "chat", name: "AI™", value: `There ${result === 1 ? "is" : "are"} ${result.toFixed(2)} oom between ${numbers[0]} and ${numbers[1]}.` });
             } else {
               io.to(room).emit("message", { type: "chat", name: "AI™", value: `That's not numbers you idiot.` });
             }
